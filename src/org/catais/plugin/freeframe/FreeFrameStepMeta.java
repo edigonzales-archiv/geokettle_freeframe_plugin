@@ -7,10 +7,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.*;
 import org.pentaho.di.core.database.DatabaseMeta; 
 import org.pentaho.di.core.exception.*;
+import org.pentaho.di.core.geospatial.SRS;
 import org.pentaho.di.core.row.*;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.*;
 import org.pentaho.di.trans.*;
 import org.pentaho.di.trans.step.*;
@@ -18,11 +18,18 @@ import org.w3c.dom.Node;
 
 public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface {
 
-	private static Class<?> PKG = FreeFrameStepMeta.class; // for i18n purposes
 	private String outputField;
+	
+	/** On which field is the transformation applied? **/
+	private String fieldName;
+	
+	/** Transformation direction and type **/
+	private String direction;
 
 	public FreeFrameStepMeta() {
 		super(); 
+		fieldName = "";
+		direction = "";
 	}
 
 	public String getOutputField() {
@@ -32,24 +39,58 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	public void setOutputField(String outputField) {
 		this.outputField = outputField;
 	}
+	
+	public String getFieldName() {
+		return fieldName;
+	}
+	
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+	
+	public String getDirection() {
+		return direction;
+	}
+	
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
 
 	public String getXML() throws KettleValueException {
 		String retval = "";
 		retval += "		<outputfield>" + getOutputField() + "</outputfield>" + Const.CR;
+		retval += "		<fieldname>" + getFieldName() + "</fieldname>" + Const.CR;
+		retval += "		<direction>" + getDirection() + "</direction>" + Const.CR;
 		return retval;
 	}
 
 	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) {
 
 		// append the outputField to the output
-		ValueMetaInterface v = new ValueMeta();
-		v.setName(outputField);
-		v.setType(ValueMeta.TYPE_STRING);
-		v.setTrimType(ValueMeta.TRIM_TYPE_BOTH);
-		v.setOrigin(origin);
+		ValueMetaInterface v1 = new ValueMeta();
+		v1.setName(outputField);
+		v1.setType(ValueMeta.TYPE_STRING);
+		v1.setTrimType(ValueMeta.TRIM_TYPE_BOTH);
+		v1.setOrigin(origin);
 
-		r.addValueMeta(v);
+		r.addValueMeta(v1);
 		
+		// discover direction
+		int idx = r.indexOfValue(fieldName);
+		if (idx >= 0) {
+			ValueMetaInterface v = r.getValueMeta(idx);
+			
+			String targetEPSG = "";
+			String sourceReferenceFrame = direction.substring(0, 4);		
+			if (sourceReferenceFrame.equalsIgnoreCase("LV03")) {
+				targetEPSG = "EPSG:2056";
+			} else {
+				targetEPSG = "EPSG:21781";
+			}
+
+			v.setGeometrySRS(SRS.createFromEPSG(targetEPSG));
+			v.setOrigin(origin);
+		}		
 	}
 
 	public Object clone() {
@@ -61,6 +102,8 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 
 		try {
 			setOutputField(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "outputfield")));
+			setFieldName(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "fieldname")));
+			setDirection(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "direction")));
 		} catch (Exception e) {
 			throw new KettleXMLException("Template Plugin Unable to read step info from XML node", e);
 		}
@@ -69,6 +112,8 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault() {
 		outputField = "template_outfield";
+		fieldName = "";
+		direction = "";
 	}
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) {
@@ -101,10 +146,12 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			outputField  = rep.getStepAttributeString(id_step, "outputfield"); //$NON-NLS-1$
+			fieldName = rep.getStepAttributeString(id_step, "fieldname"); //$NON-NLS-1$
+			direction = rep.getStepAttributeString(id_step, "direction"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG.getName(), "TemplateStep.Exception.UnexpectedErrorInReadingStepInfo"), e);
+			throw new KettleException(Messages.getString("FreeFrameStep.Exception.UnexpectedErrorInReadingStepInfo"), e);
 		}
 	}
 
@@ -113,10 +160,12 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "outputfield", outputField); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "fieldname", fieldName); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "direction", direction); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException(BaseMessages.getString(PKG.getName(), "TemplateStep.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
+			throw new KettleException(Messages.getString("FreeFrameStep.Exception.UnableToSaveStepInfoToRepository")+id_step, e); 
 		}
 	}
 }
