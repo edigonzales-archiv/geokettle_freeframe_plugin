@@ -67,6 +67,8 @@
 		<outputfield>template_outfield</outputfield>
 		<fieldname>the_geom</fieldname>
 		<direction>LV03 -> LV95 (CHENyx06)</direction>
+		<source_frame>null</source_frame>
+		<target_frame>null</target_frame>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>284</xloc>
@@ -121,6 +123,29 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>482</xloc>
       <yloc>255</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>FreeFrame Plugin 2</name>
+    <type>FreeFrame</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+		<outputfield>template_outfield</outputfield>
+		<fieldname></fieldname>
+		<direction></direction>
+		<source_frame>LV03</source_frame>
+		<target_frame>LV95</target_frame>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>160</xloc>
+      <yloc>88</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
