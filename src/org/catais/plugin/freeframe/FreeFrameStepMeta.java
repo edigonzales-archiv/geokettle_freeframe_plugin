@@ -23,22 +23,22 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	/** On which field is the transformation applied? **/
 	private String fieldName;
 	
-	/** Transformation direction and type **/
-	private String direction;
-	
 	/** Source reference frame **/
 	private String sourceFrame;
 	
 	/** Target reference frame **/
 	private String targetFrame;
+	
+	/** Triangular Transformation Network **/
+	private String triangularTransformationNetwork;
 
 
 	public FreeFrameStepMeta() {
 		super(); 
 		fieldName = "";
-		direction = "";
 		sourceFrame = "";
 		targetFrame = "";
+		triangularTransformationNetwork = "";
 	}
 
 	public String getOutputField() {
@@ -56,15 +56,7 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
 	}
-	
-	public String getDirection() {
-		return direction;
-	}
-	
-	public void setDirection(String direction) {
-		this.direction = direction;
-	}
-	
+		
 	public String getSourceFrame() {
 		return sourceFrame;
 	}
@@ -80,14 +72,22 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	public void setTargetFrame(String targetFrame) {
 		this.targetFrame = targetFrame;
 	}
+	
+	public String getTriangularTransformationNetwork() {
+		return triangularTransformationNetwork;
+	}
 
+	public void setTriangularTransformationNetwork(String triangularTransformationNetwork) {
+		this.triangularTransformationNetwork = triangularTransformationNetwork;
+	}
+	
 	public String getXML() throws KettleValueException {
 		String retval = "";
 		retval += "		<outputfield>" + getOutputField() + "</outputfield>" + Const.CR;
 		retval += "		<fieldname>" + getFieldName() + "</fieldname>" + Const.CR;
-		retval += "		<direction>" + getDirection() + "</direction>" + Const.CR;
 		retval += "		<source_frame>" + getSourceFrame() + "</source_frame>" + Const.CR;
 		retval += "		<target_frame>" + getTargetFrame() + "</target_frame>" + Const.CR;
+		retval += "		<triangular_transformation_network>" + getTriangularTransformationNetwork() + "</triangular_transformation_network>" + Const.CR;
 		return retval;
 	}
 
@@ -103,21 +103,21 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 		r.addValueMeta(v1);
 		
 		// discover direction
-		int idx = r.indexOfValue(fieldName);
-		if (idx >= 0) {
-			ValueMetaInterface v = r.getValueMeta(idx);
-			
-			String targetEPSG = "";
-			String sourceReferenceFrame = direction.substring(0, 4);		
-			if (sourceReferenceFrame.equalsIgnoreCase("LV03")) {
-				targetEPSG = "EPSG:2056";
-			} else {
-				targetEPSG = "EPSG:21781";
-			}
-
-			v.setGeometrySRS(SRS.createFromEPSG(targetEPSG));
-			v.setOrigin(origin);
-		}		
+//		int idx = r.indexOfValue(fieldName);
+//		if (idx >= 0) {
+//			ValueMetaInterface v = r.getValueMeta(idx);
+//			
+//			String targetEPSG = "";
+//			String sourceReferenceFrame = direction.substring(0, 4);		
+//			if (sourceReferenceFrame.equalsIgnoreCase("LV03")) {
+//				targetEPSG = "EPSG:2056";
+//			} else {
+//				targetEPSG = "EPSG:21781";
+//			}
+//
+//			v.setGeometrySRS(SRS.createFromEPSG(targetEPSG));
+//			v.setOrigin(origin);
+//		}		
 	}
 
 	public Object clone() {
@@ -129,10 +129,10 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 
 		try {
 			setOutputField(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "outputfield")));
-			setFieldName(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "fieldname")));
-			setDirection(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "direction")));
+			setFieldName(Const.NVL(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "fieldname")),""));			
 			setSourceFrame(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "source_frame")));
 			setTargetFrame(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "target_frame")));
+			setTriangularTransformationNetwork(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "triangular_transformation_network")));
 		} catch (Exception e) {
 			throw new KettleXMLException("Template Plugin Unable to read step info from XML node", e);
 		}
@@ -141,10 +141,11 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault() {
 		outputField = "template_outfield";
-		fieldName = "";
-		direction = "";
-		sourceFrame = "";
-		targetFrame = "";
+//		fieldName = "";
+//		direction = "";
+//		sourceFrame = "";
+//		targetFrame = "";
+//		triangularTransformationNetwork = "";
 	}
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) {
@@ -178,9 +179,9 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			outputField  = rep.getStepAttributeString(id_step, "outputfield"); //$NON-NLS-1$
 			fieldName = rep.getStepAttributeString(id_step, "fieldname"); //$NON-NLS-1$
-			direction = rep.getStepAttributeString(id_step, "direction"); //$NON-NLS-1$
 			sourceFrame = rep.getStepAttributeString(id_step, "source_frame"); //$NON-NLS-1$
 			targetFrame = rep.getStepAttributeString(id_step, "target_frame"); //$NON-NLS-1$
+			triangularTransformationNetwork = rep.getStepAttributeString(id_step, "triangular_transformation_network"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -194,9 +195,9 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "outputfield", outputField); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "fieldname", fieldName); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "direction", direction); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "source_frame", sourceFrame); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "target_frame", targetFrame); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "triangular_transformation_network", triangularTransformationNetwork); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{

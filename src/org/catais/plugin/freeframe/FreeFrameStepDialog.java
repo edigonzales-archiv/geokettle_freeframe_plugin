@@ -35,10 +35,10 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 	private FreeFrameStepMeta input;
 
 	// output field name
-	private Label wlValName, wlDirection, wlGeomName, wlSourceFrame, wlTargetFrame, wlTriangularTransformationNetwork;
+	private Label wlValName, wlGeomName, wlSourceFrame, wlTargetFrame, wlTriangularTransformationNetwork;
 	private Text wValName;
-	private FormData fdlValName, fdValName, fdlGeomName, fdGeomField, fdlDirection, fdDirection, fdlSourceFrame, fdlTargetFrame, fdSourceFrame, fdTargetFrame, fdlTriangularTransformationNetwork, fdTriangularTransformationNetwork;
-	private CCombo wGeomField,wDirection, wSourceFrame, wTargetFrame, wTriangularTransformationNetwork;
+	private FormData fdlValName, fdValName, fdlGeomName, fdGeomField, fdlSourceFrame, fdlTargetFrame, fdSourceFrame, fdTargetFrame, fdlTriangularTransformationNetwork, fdTriangularTransformationNetwork;
+	private CCombo wGeomField, wSourceFrame, wTargetFrame, wTriangularTransformationNetwork;
 	
 	public FreeFrameStepDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
 		super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -109,26 +109,6 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		fdValName.top = new FormAttachment(wStepname, margin);
 		wValName.setLayoutData(fdValName);
 		
-		// transformation direction/type
-		wlDirection = new Label(shell, SWT.RIGHT);
-		wlDirection.setText(Messages.getString("FreeFrameDialog.TransformationDirectionType.Label")); 
-		props.setLook(wlDirection);
-		fdlDirection = new FormData();
-		fdlDirection.left = new FormAttachment(0, 0);
-		fdlDirection.right = new FormAttachment(middle, -margin);
-		fdlDirection.top = new FormAttachment(wValName, margin);
-		wlDirection.setLayoutData(fdlDirection);
-
-		wDirection = new CCombo(shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY);
-		props.setLook(wDirection);
-		wDirection.addModifyListener(lsMod);
-		fdDirection = new FormData();
-		fdDirection.left = new FormAttachment(middle, 0);
-		fdDirection.right = new FormAttachment(100, 0);
-		fdDirection.top = new FormAttachment(wValName, margin);
-		wDirection.setLayoutData(fdDirection);
-		fillDirectionTypesList(wDirection);	
-		
 		// geometry field
 		wlGeomName = new Label(shell, SWT.RIGHT);
 		wlGeomName.setText(Messages.getString("FreeFrameDialog.GeomFieldName.Label")); 
@@ -136,7 +116,7 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		fdlGeomName = new FormData();
 		fdlGeomName.left = new FormAttachment(0, 0);
 		fdlGeomName.right = new FormAttachment(middle, -margin);
-		fdlGeomName.top = new FormAttachment(wDirection, margin);
+		fdlGeomName.top = new FormAttachment(wValName, margin);
 		wlGeomName.setLayoutData(fdlGeomName);
 
 		wGeomField = new CCombo(shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY);
@@ -145,7 +125,7 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		fdGeomField = new FormData();
 		fdGeomField.left = new FormAttachment(middle, 0);
 		fdGeomField.right = new FormAttachment(100, 0);
-		fdGeomField.top = new FormAttachment(wDirection, margin);
+		fdGeomField.top = new FormAttachment(wValName, margin);
 		wGeomField.setLayoutData(fdGeomField);
 		fillGeometryFieldsList(wGeomField);
 		
@@ -189,7 +169,7 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		wTargetFrame.setLayoutData(fdTargetFrame);
 		fillReferenceFrameList(wTargetFrame);
 
-		// dataset (CHENyx06, BENyx15 etc.)
+		// triangular transformation network (CHENyx06, BENyx15 etc.)
 		wlTriangularTransformationNetwork = new Label(shell, SWT.RIGHT);
 		wlTriangularTransformationNetwork.setText(Messages.getString("FreeFrameDialog.TriangularTransformationNetwork.Label")); 
 		props.setLook(wlTriangularTransformationNetwork);
@@ -283,17 +263,7 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 	private void fillReferenceFrameList(CCombo combo) {
 		combo.setItems(new String[]{"LV03", "LV95"});
 	}
-	
-	/**
-	 * Fills the combo-box with the available transformation 
-	 * directions (and types).
-	 * 
-	 * @param combo The combo-box to fill.
-	 */
-	private void fillDirectionTypesList(CCombo combo) {
-		combo.setItems(new String[]{"LV03 -> LV95 (CHENyx06)", "LV95 -> LV93 (CHENyx06)"});
-	}
-	
+		
 	/**
 	 * Fills the combo-box with the available geometry-fields that allow
 	 * a spatial reference system transformation.
@@ -320,19 +290,28 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		combo.setItems(geomFields.toArray(new String[]{}));
 
 		// set the default selection from loaded repo/xml
-//		int existingSelection = combo.indexOf(fieldname);
-//		if (existingSelection > -1)
-//			combo.select(existingSelection);
+		String fieldname = input.getFieldName();
+		int existingSelection = combo.indexOf(fieldname);
+		if (existingSelection > -1) {
+			combo.select(existingSelection);
+		}
 	}	
 	
 	// Read data and place it in the dialog
 	public void getData() {
 		wStepname.selectAll();
 		wValName.setText(input.getOutputField());
-		wDirection.setText(input.getDirection());
-		wGeomField.setText(input.getFieldName());
-		wSourceFrame.setText(input.getSourceFrame());
-		wTargetFrame.setText(input.getTargetFrame());
+		
+		//TODO: In MetaClass Const.NVL verwenden!
+		if (input.getSourceFrame() != null) {
+			wSourceFrame.setText(input.getSourceFrame());
+		}
+		if (input.getTargetFrame() != null) {
+			wTargetFrame.setText(input.getTargetFrame());
+		}
+		if (input.getTriangularTransformationNetwork() != null) {
+			wTriangularTransformationNetwork.setText(input.getTriangularTransformationNetwork());
+		}
 	}
 
 	private void cancel() {
@@ -345,10 +324,10 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 	private void ok() {
 		stepname = wStepname.getText(); // return value
 		input.setOutputField(wValName.getText());
-		input.setDirection(wDirection.getText());
 		input.setFieldName(wGeomField.getText());
 		input.setSourceFrame(wSourceFrame.getText());
 		input.setTargetFrame(wTargetFrame.getText());
+		input.setTriangularTransformationNetwork(wTriangularTransformationNetwork.getText());
 		dispose();
 	}
 }

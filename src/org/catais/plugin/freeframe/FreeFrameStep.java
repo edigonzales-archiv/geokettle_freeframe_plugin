@@ -36,7 +36,6 @@ public class FreeFrameStep extends BaseStep implements StepInterface {
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
 			logBasic("template step initialized successfully");
-
 		}
 
 		Object[] outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 1, "dummy value");
