@@ -2,12 +2,14 @@ package org.catais.plugin.freeframe;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
 
+import org.catais.plugin.freeframe.FreeFrameTransformator;
 
 public class FreeFrameStep extends BaseStep implements StepInterface {
 
@@ -35,6 +37,12 @@ public class FreeFrameStep extends BaseStep implements StepInterface {
 
 			data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			
+			String sourceFrame = meta.getSourceFrame();
+			String targetFrame = meta.getTargetFrame();
+			// INDEX HIER!!
+			transformator = new FreeFrameTransformator(sourceFrame, targetFrame);
+			
 
 			logBasic("template step initialized successfully");
 		}
@@ -42,6 +50,19 @@ public class FreeFrameStep extends BaseStep implements StepInterface {
 		Object[] outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 1, "dummy value");
 
 		putRow(data.outputRowMeta, outputRow); // copy row to possible alternate rowset(s)
+		
+		
+		// my stuff
+		try {
+			Object[] myOutputRow = transformSpatialReferenceSystem(data.outputRowMeta, r);
+		} catch (KettleStepException ke) {
+			log.logError("GeoKettle", ke.getSuperMessage());
+			setErrors(1);
+			setOutputDone();
+			return false;
+			
+		}
+		
 
 		if (checkFeedback(getLinesRead())) {
 			logBasic("Linenr " + getLinesRead()); // Some basic logging
@@ -50,6 +71,14 @@ public class FreeFrameStep extends BaseStep implements StepInterface {
 		return true;
 	}
 
+	private synchronized Object[] transformSpatialReferenceSystem(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+		transformator.transform();
+		
+		return row;
+	}
+	
+	
+	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
 		meta = (FreeFrameStepMeta) smi;
 		data = (FreeFrameStepData) sdi;

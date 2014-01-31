@@ -102,22 +102,20 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 
 		r.addValueMeta(v1);
 		
-		// discover direction
-//		int idx = r.indexOfValue(fieldName);
-//		if (idx >= 0) {
-//			ValueMetaInterface v = r.getValueMeta(idx);
-//			
-//			String targetEPSG = "";
-//			String sourceReferenceFrame = direction.substring(0, 4);		
-//			if (sourceReferenceFrame.equalsIgnoreCase("LV03")) {
-//				targetEPSG = "EPSG:2056";
-//			} else {
-//				targetEPSG = "EPSG:21781";
-//			}
-//
-//			v.setGeometrySRS(SRS.createFromEPSG(targetEPSG));
-//			v.setOrigin(origin);
-//		}		
+		// change output SRS
+		int idx = r.indexOfValue(fieldName);
+		if (idx >= 0) {
+			ValueMetaInterface v = r.getValueMeta(idx);
+			
+			String targetEPSG;
+			if (targetFrame.trim().equalsIgnoreCase("LV95")) {
+				targetEPSG = "EPSG:2056";
+			} else {
+				targetEPSG = "EPSG:21781";
+			}
+			v.setGeometrySRS(SRS.createFromEPSG(targetEPSG));
+			v.setOrigin(origin);
+		}	
 	}
 
 	public Object clone() {

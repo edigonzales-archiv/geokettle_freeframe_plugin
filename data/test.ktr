@@ -66,8 +66,8 @@
            </partitioning>
 		<outputfield>template_outfield</outputfield>
 		<fieldname>the_geom</fieldname>
-		<source_frame>LV03</source_frame>
-		<target_frame>LV95</target_frame>
+		<source_frame>LV95</source_frame>
+		<target_frame>LV03</target_frame>
 		<triangular_transformation_network>BEENyx15</triangular_transformation_network>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
