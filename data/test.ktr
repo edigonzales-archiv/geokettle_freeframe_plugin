@@ -68,7 +68,7 @@
 		<fieldname>the_geom</fieldname>
 		<source_frame>LV03</source_frame>
 		<target_frame>LV95</target_frame>
-		<triangular_transformation_network>BENyx15</triangular_transformation_network>
+		<triangular_transformation_network>BEENyx15</triangular_transformation_network>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>283</xloc>

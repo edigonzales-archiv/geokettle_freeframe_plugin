@@ -13,6 +13,7 @@ public class FreeFrameStep extends BaseStep implements StepInterface {
 
 	private FreeFrameStepData data;
 	private FreeFrameStepMeta meta;
+	private FreeFrameTransformator transformator;
 	
 	public FreeFrameStep(StepMeta s, StepDataInterface stepDataInterface, int c, TransMeta t, Trans dis) {
 		super(s, stepDataInterface, c, t, dis);

@@ -130,9 +130,9 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 		try {
 			setOutputField(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "outputfield")));
 			setFieldName(Const.NVL(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "fieldname")),""));			
-			setSourceFrame(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "source_frame")));
-			setTargetFrame(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "target_frame")));
-			setTriangularTransformationNetwork(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "triangular_transformation_network")));
+			setSourceFrame(Const.NVL(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "source_frame")),""));
+			setTargetFrame(Const.NVL(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "target_frame")),""));
+			setTriangularTransformationNetwork(Const.NVL(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "triangular_transformation_network")),""));
 		} catch (Exception e) {
 			throw new KettleXMLException("Template Plugin Unable to read step info from XML node", e);
 		}

@@ -251,7 +251,7 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 	 * @param combo The combo-box to fill.
 	 */
 	private void fillTriangularTransformationNetworkList(CCombo combo) {
-		combo.setItems(new String[]{"CHENyx06", "BENyx15"});
+		combo.setItems(new String[]{"CHENyx06", "BEENyx15"});
 	}
 	
 	/**
@@ -301,17 +301,9 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 	public void getData() {
 		wStepname.selectAll();
 		wValName.setText(input.getOutputField());
-		
-		//TODO: In MetaClass Const.NVL verwenden!
-		if (input.getSourceFrame() != null) {
-			wSourceFrame.setText(input.getSourceFrame());
-		}
-		if (input.getTargetFrame() != null) {
-			wTargetFrame.setText(input.getTargetFrame());
-		}
-		if (input.getTriangularTransformationNetwork() != null) {
-			wTriangularTransformationNetwork.setText(input.getTriangularTransformationNetwork());
-		}
+		wSourceFrame.setText(input.getSourceFrame());
+		wTargetFrame.setText(input.getTargetFrame());
+		wTriangularTransformationNetwork.setText(input.getTriangularTransformationNetwork());
 	}
 
 	private void cancel() {
