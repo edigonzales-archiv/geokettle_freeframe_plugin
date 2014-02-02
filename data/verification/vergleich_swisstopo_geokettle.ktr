@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>vergleich_swisstopo_geokettle</name>
+    <description/>
+    <extended_description/>
+    <trans_version/>
+    <directory>&#47;</directory>
+    <parameters>
+    </parameters>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <rejected/>
+      <connection/>
+      <table/>
+      <step_performance_table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      <size_limit_lines/>
+    </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+    </maxdate>
+    <size_rowset>10000</size_rowset>
+    <sleep_time_empty>50</sleep_time_empty>
+    <sleep_time_full>50</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>50000</feedback_size>
+    <using_thread_priorities>Y</using_thread_priorities>
+    <shared_objects_file/>
+    <capture_step_performance>N</capture_step_performance>
+    <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <dependencies>
+    </dependencies>
+    <partitionschemas>
+    </partitionschemas>
+    <slaveservers>
+    </slaveservers>
+    <clusterschemas>
+    </clusterschemas>
+  <modified_user>-</modified_user>
+  <modified_date>2014&#47;02&#47;02 19:58:02.872</modified_date>
+  </info>
+  <notepads>
+  </notepads>
+  <order>
+  <hop> <from>swisstopo</from><to>sort swisstopo</to><enabled>Y</enabled> </hop>  <hop> <from>geokettle</from><to>sort geokettle</to><enabled>Y</enabled> </hop>  <hop> <from>sort swisstopo</from><to>rename swisstopo geom field</to><enabled>Y</enabled> </hop>  <hop> <from>sort geokettle</from><to>rename geokettle geom field</to><enabled>Y</enabled> </hop>  <hop> <from>rename swisstopo geom field</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>rename geokettle geom field</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>Merge Join</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  </order>
+  <step>
+    <name>Merge Join</name>
+    <type>MergeJoin</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+<join_type>INNER</join_type>
+<step1>rename swisstopo geom field</step1>
+<step2>rename geokettle geom field</step2>
+    <keys_1>
+      <key>ident_swisstopo</key>
+    </keys_1>
+    <keys_2>
+      <key>ident_geokettle</key>
+    </keys_2>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>543</xloc>
+      <yloc>208</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Modified Java Script Value</name>
+    <type>ScriptValueMod</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <compatible>N</compatible>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Script 1</jsScript_name>
+        <jsScript_script>&#47;&#47;Script here
+ geom_swisstopo.getCoordinate().x;
+
+var coordX = geom_swisstopo.getCoordinate().x;
+</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>      <field>        <name>coordX</name>
+        <rename>coordX</rename>
+        <type>Number</type>
+        <length>40</length>
+        <precision>20</precision>
+        <replace>N</replace>
+      </field>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>719</xloc>
+      <yloc>209</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>geokettle</name>
+    <type>GISFileInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <filename>&#47;home&#47;stefan&#47;Develop&#47;src&#47;geokettle_freeframe_plugin&#47;data&#47;verification&#47;lv95_geokettle&#47;lv95_geokettle.shp</filename>
+    <isfilenameinfield>N</isfilenameinfield>
+    <filenamefield/>
+    <limit>0</limit>
+    <add_rownr>N</add_rownr>
+    <field_rownr/>
+    <gis_file_charset>UTF-8</gis_file_charset>
+    <passing_through_fields>N</passing_through_fields>
+    <accept_stepname/>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>69</xloc>
+      <yloc>263</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>rename geokettle geom field</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>      <field>        <name>the_geom</name>
+        <rename>geom_geokettle</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>ident_b</name>
+        <rename>ident_geokettle</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>        <select_unspecified>N</select_unspecified>
+    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>374</xloc>
+      <yloc>261</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>rename swisstopo geom field</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>      <field>        <name>the_geom</name>
+        <rename>geom_swisstopo</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>ident_b</name>
+        <rename>ident_swisstopo</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>        <select_unspecified>N</select_unspecified>
+    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>365</xloc>
+      <yloc>125</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>sort geokettle</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+      <directory>%%java.io.tmpdir%%</directory>
+      <prefix>out</prefix>
+      <sort_size/>
+      <free_memory>25</free_memory>
+      <compress>N</compress>
+      <compress_variable/>
+      <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>ident_b</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>195</xloc>
+      <yloc>262</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>sort swisstopo</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+      <directory>%%java.io.tmpdir%%</directory>
+      <prefix>out</prefix>
+      <sort_size/>
+      <free_memory>25</free_memory>
+      <compress>N</compress>
+      <compress_variable/>
+      <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>ident_b</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>200</xloc>
+      <yloc>126</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>swisstopo</name>
+    <type>GISFileInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <filename>&#47;home&#47;stefan&#47;Develop&#47;src&#47;geokettle_freeframe_plugin&#47;data&#47;verification&#47;lv95_swisstopo&#47;test_lv95_swisstopo.shp</filename>
+    <isfilenameinfield>N</isfilenameinfield>
+    <filenamefield/>
+    <limit>0</limit>
+    <add_rownr>N</add_rownr>
+    <field_rownr/>
+    <gis_file_charset>UTF-8</gis_file_charset>
+    <passing_through_fields>N</passing_through_fields>
+    <accept_stepname/>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>65</xloc>
+      <yloc>126</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step_error_handling>
+  </step_error_handling>
+   <slave-step-copy-partition-distribution>
+</slave-step-copy-partition-distribution>
+   <slave_transformation>N</slave_transformation>
+</transformation>

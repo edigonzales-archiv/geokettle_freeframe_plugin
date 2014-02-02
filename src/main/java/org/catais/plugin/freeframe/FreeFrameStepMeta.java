@@ -17,8 +17,6 @@ import org.pentaho.di.trans.step.*;
 import org.w3c.dom.Node;
 
 public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface {
-
-	private String outputField;
 	
 	/** On which field is the transformation applied? **/
 	private String fieldName;
@@ -39,14 +37,6 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 		sourceFrame = "";
 		targetFrame = "";
 		triangularTransformationNetwork = "";
-	}
-
-	public String getOutputField() {
-		return outputField;
-	}
-
-	public void setOutputField(String outputField) {
-		this.outputField = outputField;
 	}
 	
 	public String getFieldName() {
@@ -83,7 +73,6 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public String getXML() throws KettleValueException {
 		String retval = "";
-		retval += "		<outputfield>" + getOutputField() + "</outputfield>" + Const.CR;
 		retval += "		<fieldname>" + getFieldName() + "</fieldname>" + Const.CR;
 		retval += "		<source_frame>" + getSourceFrame() + "</source_frame>" + Const.CR;
 		retval += "		<target_frame>" + getTargetFrame() + "</target_frame>" + Const.CR;
@@ -92,15 +81,6 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	public void getFields(RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) {
-
-		// append the outputField to the output
-		ValueMetaInterface v1 = new ValueMeta();
-		v1.setName(outputField);
-		v1.setType(ValueMeta.TYPE_STRING);
-		v1.setTrimType(ValueMeta.TRIM_TYPE_BOTH);
-		v1.setOrigin(origin);
-
-		r.addValueMeta(v1);
 		
 		// change output SRS
 		int idx = r.indexOfValue(fieldName);
@@ -126,7 +106,6 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
 
 		try {
-			setOutputField(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "outputfield")));
 			setFieldName(Const.NVL(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "fieldname")),""));			
 			setSourceFrame(Const.NVL(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "source_frame")),""));
 			setTargetFrame(Const.NVL(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "target_frame")),""));
@@ -138,7 +117,6 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	public void setDefault() {
-		outputField = "template_outfield";
 //		fieldName = "";
 //		direction = "";
 //		sourceFrame = "";
@@ -175,7 +153,6 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	public void readRep(Repository rep, long id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
 		try
 		{
-			outputField  = rep.getStepAttributeString(id_step, "outputfield"); //$NON-NLS-1$
 			fieldName = rep.getStepAttributeString(id_step, "fieldname"); //$NON-NLS-1$
 			sourceFrame = rep.getStepAttributeString(id_step, "source_frame"); //$NON-NLS-1$
 			targetFrame = rep.getStepAttributeString(id_step, "target_frame"); //$NON-NLS-1$
@@ -191,7 +168,6 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "outputfield", outputField); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "fieldname", fieldName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "source_frame", sourceFrame); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "target_frame", targetFrame); //$NON-NLS-1$

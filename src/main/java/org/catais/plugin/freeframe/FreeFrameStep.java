@@ -1,15 +1,20 @@
 package org.catais.plugin.freeframe;
 
+import java.io.IOException;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
 
 import org.catais.plugin.freeframe.FreeFrameTransformator;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class FreeFrameStep extends BaseStep implements StepInterface {
 
@@ -24,6 +29,10 @@ public class FreeFrameStep extends BaseStep implements StepInterface {
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
 		meta = (FreeFrameStepMeta) smi;
 		data = (FreeFrameStepData) sdi;
+		
+		String sourceFrame = meta.getSourceFrame();
+		String targetFrame = meta.getTargetFrame();
+		String triangularTransformationNetwork = meta.getTriangularTransformationNetwork();
 
 		Object[] r = getRow(); // get row, blocks when needed!
 		if (r == null) // no more input to be expected...
@@ -38,46 +47,53 @@ public class FreeFrameStep extends BaseStep implements StepInterface {
 			data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
-			String sourceFrame = meta.getSourceFrame();
-			String targetFrame = meta.getTargetFrame();
-			// INDEX HIER!!
-			transformator = new FreeFrameTransformator(sourceFrame, targetFrame);
-			
-
-			logBasic("template step initialized successfully");
+			try {
+				transformator = new FreeFrameTransformator(sourceFrame, targetFrame, triangularTransformationNetwork);
+			} catch (IOException e) {
+				log.logError("FreeFrameStep", e.getMessage());
+				setErrors(1);
+				setOutputDone();
+				return false;
+			}
+			logBasic("freeframe step initialized successfully");
 		}
 
-		Object[] outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 1, "dummy value");
+		if (sourceFrame.equalsIgnoreCase(targetFrame)) {
+			logDebug("no transformation necessary (sourceFrame = targetFrame");
+			putRow(data.outputRowMeta, r);
+			return true;
+		} 
 
-		putRow(data.outputRowMeta, outputRow); // copy row to possible alternate rowset(s)
-		
-		
-		// my stuff
-		try {
-			Object[] myOutputRow = transformSpatialReferenceSystem(data.outputRowMeta, r);
+		try {			
+			Object[] outputRow = transformSpatialReferenceSystem(data.outputRowMeta, r);
+			putRow(data.outputRowMeta, outputRow);
 		} catch (KettleStepException ke) {
-			log.logError("GeoKettle", ke.getSuperMessage());
+			log.logError("FreeFrameStep", ke.getSuperMessage());
 			setErrors(1);
 			setOutputDone();
 			return false;
-			
 		}
-		
-
-		if (checkFeedback(getLinesRead())) {
-			logBasic("Linenr " + getLinesRead()); // Some basic logging
-		}
-
 		return true;
 	}
 
 	private synchronized Object[] transformSpatialReferenceSystem(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
-		transformator.transform();
+		final int LENGTH = row.length;
+		Object[] result = new Object[LENGTH];
 		
-		return row;
+		for (int i=0; i < LENGTH; i++) {
+			if (row[i] != null) {
+				ValueMetaInterface vm = rowMeta.getValueMeta(i);
+				if (vm.getName().equals(meta.getFieldName()) && vm.isGeometry()) {
+					result[i] = transformator.transform( (Geometry) row[i] );
+				} else {
+					result[i] = row[i];
+				}
+			} else {
+				result[i] = null;
+			}
+		}
+		return result;
 	}
-	
-	
 	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
 		meta = (FreeFrameStepMeta) smi;

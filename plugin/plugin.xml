@@ -4,8 +4,8 @@
    id="FreeFrame"
    iconfile="icon.png"
    description="FreeFrame Plugin"
-   tooltip="Only there for demonstration purposes"
-   category="Demonstration"
+   tooltip="Transformer for the transition of reference frames"
+   category="Transform"
    classname="org.catais.plugin.freeframe.FreeFrameStepMeta">
 		
 		<libraries>

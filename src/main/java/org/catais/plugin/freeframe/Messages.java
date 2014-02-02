@@ -5,7 +5,7 @@ import org.pentaho.di.i18n.BaseMessages;
 public class Messages {
 
 	public static final String packageName = Messages.class.getPackage().getName();
-
+	
 	public static String getString(String key) {
 		return BaseMessages.getString(packageName, key);
 	}

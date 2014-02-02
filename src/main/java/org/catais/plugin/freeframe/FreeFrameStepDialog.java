@@ -30,14 +30,15 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 
+import org.catais.plugin.freeframe.Messages;
+
 public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInterface {
 	
 	private FreeFrameStepMeta input;
 
 	// output field name
-	private Label wlValName, wlGeomName, wlSourceFrame, wlTargetFrame, wlTriangularTransformationNetwork;
-	private Text wValName;
-	private FormData fdlValName, fdValName, fdlGeomName, fdGeomField, fdlSourceFrame, fdlTargetFrame, fdSourceFrame, fdTargetFrame, fdlTriangularTransformationNetwork, fdTriangularTransformationNetwork;
+	private Label wlGeomName, wlSourceFrame, wlTargetFrame, wlTriangularTransformationNetwork;
+	private FormData fdlGeomName, fdGeomField, fdlSourceFrame, fdlTargetFrame, fdSourceFrame, fdTargetFrame, fdlTriangularTransformationNetwork, fdTriangularTransformationNetwork;
 	private CCombo wGeomField, wSourceFrame, wTargetFrame, wTriangularTransformationNetwork;
 	
 	public FreeFrameStepDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
@@ -65,11 +66,11 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(Messages.getString("Template.Shell.Title")); 
+		shell.setText(Messages.getString("FreeFrameDialog.Shell.Title")); 
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
-
+		
 		// Stepname line
 		wlStepname = new Label(shell, SWT.RIGHT);
 		wlStepname.setText(Messages.getString("System.Label.StepName")); 
@@ -89,25 +90,6 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		fdStepname.top = new FormAttachment(0, margin);
 		fdStepname.right = new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
-
-		// output dummy value
-		wlValName = new Label(shell, SWT.RIGHT);
-		wlValName.setText(Messages.getString("Template.FieldName.Label")); 
-		props.setLook(wlValName);
-		fdlValName = new FormData();
-		fdlValName.left = new FormAttachment(0, 0);
-		fdlValName.right = new FormAttachment(middle, -margin);
-		fdlValName.top = new FormAttachment(wStepname, margin);
-		wlValName.setLayoutData(fdlValName);
-
-		wValName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		props.setLook(wValName);
-		wValName.addModifyListener(lsMod);
-		fdValName = new FormData();
-		fdValName.left = new FormAttachment(middle, 0);
-		fdValName.right = new FormAttachment(100, 0);
-		fdValName.top = new FormAttachment(wStepname, margin);
-		wValName.setLayoutData(fdValName);
 		
 		// geometry field
 		wlGeomName = new Label(shell, SWT.RIGHT);
@@ -116,7 +98,7 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		fdlGeomName = new FormData();
 		fdlGeomName.left = new FormAttachment(0, 0);
 		fdlGeomName.right = new FormAttachment(middle, -margin);
-		fdlGeomName.top = new FormAttachment(wValName, margin);
+		fdlGeomName.top = new FormAttachment(wStepname, margin);
 		wlGeomName.setLayoutData(fdlGeomName);
 
 		wGeomField = new CCombo(shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY);
@@ -125,7 +107,7 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		fdGeomField = new FormData();
 		fdGeomField.left = new FormAttachment(middle, 0);
 		fdGeomField.right = new FormAttachment(100, 0);
-		fdGeomField.top = new FormAttachment(wValName, margin);
+		fdGeomField.top = new FormAttachment(wStepname, margin);
 		wGeomField.setLayoutData(fdGeomField);
 		fillGeometryFieldsList(wGeomField);
 		
@@ -220,7 +202,10 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 		};
 
 		wStepname.addSelectionListener(lsDef);
-		wValName.addSelectionListener(lsDef);
+		wGeomField.addSelectionListener(lsDef);
+		wSourceFrame.addSelectionListener(lsDef);
+		wTargetFrame.addSelectionListener(lsDef);
+		wTriangularTransformationNetwork.addSelectionListener(lsDef);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter() {
@@ -228,8 +213,7 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 				cancel();
 			}
 		});
-
-		
+	
 		// Set the shell size, based upon previous time...
 		setSize();
 
@@ -251,7 +235,8 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 	 * @param combo The combo-box to fill.
 	 */
 	private void fillTriangularTransformationNetworkList(CCombo combo) {
-		combo.setItems(new String[]{"CHENyx06", "BEENyx15"});
+		//combo.setItems(new String[]{"CHENyx06", "BEENyx15"});
+		combo.setItems(new String[]{"CHENyx06"});
 	}
 	
 	/**
@@ -300,7 +285,6 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 	// Read data and place it in the dialog
 	public void getData() {
 		wStepname.selectAll();
-		wValName.setText(input.getOutputField());
 		wSourceFrame.setText(input.getSourceFrame());
 		wTargetFrame.setText(input.getTargetFrame());
 		wTriangularTransformationNetwork.setText(input.getTriangularTransformationNetwork());
@@ -315,7 +299,6 @@ public class FreeFrameStepDialog extends BaseStepDialog implements StepDialogInt
 	// let the plugin know about the entered data
 	private void ok() {
 		stepname = wStepname.getText(); // return value
-		input.setOutputField(wValName.getText());
 		input.setFieldName(wGeomField.getText());
 		input.setSourceFrame(wSourceFrame.getText());
 		input.setTargetFrame(wTargetFrame.getText());
