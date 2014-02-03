@@ -8,7 +8,7 @@ Unzip the file and copy the folder with its content (freeframestep.jar, icon.png
 
 You should have something like this:
 
-![ScreenShot](https://raw.github.com/edigonzales/geokettle_freeframe_plugin/master/data/images/installation01.png)
+![ScreenShot](https://github.com/edigonzales/geokettle_freeframe_plugin/raw/master/data/images/installation_01.png)
 
 <h2>Use</h2>
 
