@@ -177,6 +177,7 @@ public class FreeFrameTransformator {
     				AffineTransformationBuilder builder = new AffineTransformationBuilder(t1[0], t1[1], t1[2], t2[0], t2[1], t2[2]);
     				builder.getTransformation().transform(coord, coordTransformed);
     				LogWriter.getInstance().logDebug("FreeFrameTransformator", coordTransformed.toString());
+    				coordTransformed.z = coord.z;
     				return coordTransformed;
     				
 //    				Set decimal format in dialog?

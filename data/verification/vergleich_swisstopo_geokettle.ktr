@@ -53,7 +53,7 @@
   <notepads>
   </notepads>
   <order>
-  <hop> <from>swisstopo</from><to>sort swisstopo</to><enabled>Y</enabled> </hop>  <hop> <from>geokettle</from><to>sort geokettle</to><enabled>Y</enabled> </hop>  <hop> <from>sort swisstopo</from><to>rename swisstopo geom field</to><enabled>Y</enabled> </hop>  <hop> <from>sort geokettle</from><to>rename geokettle geom field</to><enabled>Y</enabled> </hop>  <hop> <from>rename swisstopo geom field</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>rename geokettle geom field</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>Merge Join</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>swisstopo</from><to>sort swisstopo</to><enabled>Y</enabled> </hop>  <hop> <from>geokettle</from><to>sort geokettle</to><enabled>Y</enabled> </hop>  <hop> <from>sort swisstopo</from><to>rename swisstopo geom field</to><enabled>Y</enabled> </hop>  <hop> <from>sort geokettle</from><to>rename geokettle geom field</to><enabled>Y</enabled> </hop>  <hop> <from>rename swisstopo geom field</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>rename geokettle geom field</from><to>Merge Join</to><enabled>Y</enabled> </hop>  <hop> <from>Merge Join</from><to>calculate difference</to><enabled>Y</enabled> </hop>  <hop> <from>calculate difference</from><to>Excel Output</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Merge Join</name>
     <type>MergeJoin</type>
@@ -75,14 +75,14 @@
     </keys_2>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>543</xloc>
-      <yloc>208</yloc>
+      <xloc>465</xloc>
+      <yloc>166</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Modified Java Script Value</name>
+    <name>calculate difference</name>
     <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
@@ -95,20 +95,55 @@
     <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
         <jsScript_script>&#47;&#47;Script here
- geom_swisstopo.getCoordinate().x;
+var coord_x_swisstopo = geom_swisstopo.getCoordinate().x;
+var coord_y_swisstopo = geom_swisstopo.getCoordinate().y;
 
-var coordX = geom_swisstopo.getCoordinate().x;
+var coord_x_geokettle = geom_geokettle.getCoordinate().x;
+var coord_y_geokettle = geom_geokettle.getCoordinate().y;
+
+var diff_x = (coord_x_swisstopo - coord_x_geokettle);
+var diff_y = (coord_x_swisstopo - coord_x_geokettle);
 </jsScript_script>
-      </jsScript>    </jsScripts>    <fields>      <field>        <name>coordX</name>
-        <rename>coordX</rename>
+      </jsScript>    </jsScripts>    <fields>      <field>        <name>coord_x_swisstopo</name>
+        <rename>coord_x_swisstopo</rename>
         <type>Number</type>
-        <length>40</length>
-        <precision>20</precision>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>      <field>        <name>coord_y_swisstopo</name>
+        <rename>coord_y_swisstopo</rename>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>      <field>        <name>coord_x_geokettle</name>
+        <rename>coord_x_geokettle</rename>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>      <field>        <name>coord_y_geokettle</name>
+        <rename>coord_y_geokettle</rename>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>      <field>        <name>diff_x</name>
+        <rename>diff_x</rename>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>      <field>        <name>diff_y</name>
+        <rename>diff_y</rename>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
         <replace>N</replace>
       </field>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>719</xloc>
-      <yloc>209</yloc>
+      <xloc>616</xloc>
+      <yloc>166</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -134,8 +169,8 @@ var coordX = geom_swisstopo.getCoordinate().x;
     <accept_stepname/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>69</xloc>
-      <yloc>263</yloc>
+      <xloc>43</xloc>
+      <yloc>269</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -161,8 +196,8 @@ var coordX = geom_swisstopo.getCoordinate().x;
       </field>        <select_unspecified>N</select_unspecified>
     </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>374</xloc>
-      <yloc>261</yloc>
+      <xloc>322</xloc>
+      <yloc>269</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -188,8 +223,8 @@ var coordX = geom_swisstopo.getCoordinate().x;
       </field>        <select_unspecified>N</select_unspecified>
     </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>365</xloc>
-      <yloc>125</yloc>
+      <xloc>317</xloc>
+      <yloc>48</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -220,8 +255,8 @@ var coordX = geom_swisstopo.getCoordinate().x;
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>195</xloc>
-      <yloc>262</yloc>
+      <xloc>169</xloc>
+      <yloc>269</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -252,8 +287,8 @@ var coordX = geom_swisstopo.getCoordinate().x;
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>200</xloc>
-      <yloc>126</yloc>
+      <xloc>178</xloc>
+      <yloc>48</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -279,8 +314,93 @@ var coordX = geom_swisstopo.getCoordinate().x;
     <accept_stepname/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>65</xloc>
-      <yloc>126</yloc>
+      <xloc>43</xloc>
+      <yloc>48</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Excel Output</name>
+    <type>ExcelOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <header>Y</header>
+    <footer>N</footer>
+    <encoding>UTF-8</encoding>
+    <append>N</append>
+    <add_to_result_filenames>Y</add_to_result_filenames>
+    <file>
+      <name>&#47;home&#47;stefan&#47;tmp&#47;vergleich_freeframe_geokettle</name>
+      <extention>xls</extention>
+      <do_not_open_newfile_init>N</do_not_open_newfile_init>
+      <split>N</split>
+      <add_date>Y</add_date>
+      <add_time>Y</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <sheetname>Sheet1</sheetname>
+      <autosizecolums>N</autosizecolums>
+      <protect_sheet>N</protect_sheet>
+      <password>Encrypted </password>
+      <splitevery>0</splitevery>
+      </file>
+    <template>
+      <enabled>N</enabled>
+      <append>N</append>
+      <filename>template.xls</filename>
+    </template>
+    <fields>
+      <field>
+        <name>ident_swisstopo</name>
+        <type>String</type>
+        <format/>
+      </field>
+      <field>
+        <name>ident_geokettle</name>
+        <type>String</type>
+        <format/>
+      </field>
+      <field>
+        <name>coord_x_swisstopo</name>
+        <type>Number</type>
+        <format>###0.000</format>
+      </field>
+      <field>
+        <name>coord_y_swisstopo</name>
+        <type>Number</type>
+        <format>###0.000</format>
+      </field>
+      <field>
+        <name>coord_x_geokettle</name>
+        <type>Number</type>
+        <format>###0.000</format>
+      </field>
+      <field>
+        <name>coord_y_geokettle</name>
+        <type>Number</type>
+        <format>###0.000</format>
+      </field>
+      <field>
+        <name>diff_x</name>
+        <type>Number</type>
+        <format>0.0000000000000000000000000</format>
+      </field>
+      <field>
+        <name>diff_y</name>
+        <type>Number</type>
+        <format>0.0000000000000000000000000</format>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>755</xloc>
+      <yloc>166</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
