@@ -10,6 +10,10 @@ You should have something like this:
 
 ![ScreenShot](https://github.com/edigonzales/geokettle_freeframe_plugin/raw/master/data/images/installation_01.png)
 
+If the installation was successful you see a new entry (FreeFrame Plugin) in the Transform section:
+
+![ScreenShot](https://github.com/edigonzales/geokettle_freeframe_plugin/raw/master/data/images/installation_02.png)
+
 <h2>Use</h2>
 
 
