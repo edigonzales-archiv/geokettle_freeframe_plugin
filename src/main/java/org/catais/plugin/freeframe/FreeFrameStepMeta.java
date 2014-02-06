@@ -89,9 +89,9 @@ public class FreeFrameStepMeta extends BaseStepMeta implements StepMetaInterface
 			
 			String targetEPSG;
 			if (targetFrame.trim().equalsIgnoreCase("LV95")) {
-				targetEPSG = "EPSG:2056";
+				targetEPSG = "2056";
 			} else {
-				targetEPSG = "EPSG:21781";
+				targetEPSG = "21781";
 			}
 			v.setGeometrySRS(SRS.createFromEPSG(targetEPSG));
 			v.setOrigin(origin);

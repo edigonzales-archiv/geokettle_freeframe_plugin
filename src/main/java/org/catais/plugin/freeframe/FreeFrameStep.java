@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -44,9 +43,10 @@ public class FreeFrameStep extends BaseStep implements StepInterface {
 		if (first) {
 			first = false;
 
-			data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-			
+			RowMetaInterface outputRowMeta = getInputRowMeta().clone();
+        	meta.getFields(outputRowMeta, getStepname(), null, null, this);
+            data.setOutputRowMeta(outputRowMeta);
+            
 			try {
 				transformator = new FreeFrameTransformator(sourceFrame, targetFrame, triangularTransformationNetwork);
 			} catch (IOException e) {
@@ -59,14 +59,14 @@ public class FreeFrameStep extends BaseStep implements StepInterface {
 		}
 
 		if (sourceFrame.equalsIgnoreCase(targetFrame)) {
-			logDebug("no transformation necessary (sourceFrame = targetFrame");
-			putRow(data.outputRowMeta, r);
+			logDebug("no transformation necessary (sourceFrame = targetFrame)");
+			putRow(data.getOutputRowMeta(), r);
 			return true;
 		} 
 
 		try {			
-			Object[] outputRow = transformSpatialReferenceSystem(data.outputRowMeta, r);
-			putRow(data.outputRowMeta, outputRow);
+			Object[] outputRow = transformSpatialReferenceSystem(data.getOutputRowMeta(), r);
+			putRow(data.getOutputRowMeta(), outputRow);
 		} catch (KettleStepException ke) {
 			log.logError("FreeFrameStep", ke.getSuperMessage());
 			setErrors(1);

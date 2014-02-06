@@ -120,7 +120,7 @@ public class FreeFrameTransformator {
 			targetGeometry = (Geometry) sourceGeometry.clone();
 		}
 		targetGeometry.setSRID(SRID);
-		
+				
 		return targetGeometry;
 	}
 	
@@ -166,6 +166,7 @@ public class FreeFrameTransformator {
     		SimpleFeature f = (SimpleFeature) o;
     		MultiPolygon poly1 = (MultiPolygon) f.getDefaultGeometry();
     		if (ppoint.intersects(poly1)) {
+    			String nummer = (String) f.getAttribute("nummer");
     			String dstWkt = (String) f.getAttribute("dstwkt");
     			
     			try {
@@ -176,7 +177,11 @@ public class FreeFrameTransformator {
         			
     				AffineTransformationBuilder builder = new AffineTransformationBuilder(t1[0], t1[1], t1[2], t2[0], t2[1], t2[2]);
     				builder.getTransformation().transform(coord, coordTransformed);
-    				LogWriter.getInstance().logDebug("FreeFrameTransformator", coordTransformed.toString());
+    				
+        			LogWriter.getInstance().logDebug("FreeFrameTransformator", "Triangle: " + nummer);
+    				LogWriter.getInstance().logDebug("FreeFrameTransformator", "Input: " + coord.toString());
+    				LogWriter.getInstance().logDebug("FreeFrameTransformator", "Output: " + coordTransformed.toString());
+    				
     				coordTransformed.z = coord.z;
     				return coordTransformed;
     				
